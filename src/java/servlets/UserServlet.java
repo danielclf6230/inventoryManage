@@ -32,13 +32,15 @@ public class UserServlet extends HttpServlet {
             throws ServletException, IOException {
 
         UserService us = new UserService();
+        HttpSession session = request.getSession();
 
         String action = request.getParameter("action");
-        if (action != null && action.equals("edit")) {
+        if ((action != null && action.equals("edit")) || session.getAttribute("selectedUser") != null) {
             try {
                 String email = request.getParameter("userEmail");
                 User user = us.get(email);
-                request.setAttribute("selectedUser", user);
+                session.setAttribute("selectedUser", user);
+                
             } catch (Exception ex) {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -52,8 +54,7 @@ public class UserServlet extends HttpServlet {
                 Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        HttpSession session = request.getSession();
+
         List<User> users = null;
 
         try {
@@ -77,39 +78,63 @@ public class UserServlet extends HttpServlet {
 
         // action must be one of: create, update, delete
         String action = request.getParameter("action");
-
-        String email = request.getParameter("emailIn");
+        String email = request.getParameter("email");
         String firstName = request.getParameter("fnIn");
-        String lastname = request.getParameter("lnIn");
+        String lastName = request.getParameter("lnIn");
         String password = request.getParameter("pwIn");
         Boolean activity = true;
         RoleDB roleDB = new RoleDB();
         int role_id = 0;
- 
+        HttpSession session = request.getSession();
 
         try {
             switch (action) {
                 case "add":
-                    role_id = Integer.parseInt(request.getParameter("role"));
-                    Role role = roleDB.get(role_id);
-                    us.insert(email, activity, firstName, lastname, password, role);
+                    if (email.equals("") || firstName.equals("") || lastName.equals("") || password.equals("")) {
+                        request.setAttribute("message", "All fields are required");
+                        request.setAttribute("email", email);
+                        request.setAttribute("firstName", firstName);
+                        request.setAttribute("lastName", lastName);
+                        request.setAttribute("password", password);
+                    } else {
+                        role_id = Integer.parseInt(request.getParameter("role"));
+                        Role role = roleDB.get(role_id);
+                        us.insert(email, activity, firstName, lastName, password, role);
+
+                    }
                     break;
                 case "update":
-                    role_id = Integer.parseInt(request.getParameter("role"));
-                    role = roleDB.get(role_id);
-                    us.update(email, activity, firstName, lastname, password, role);
+                    if (email.equals("") || firstName.equals("") || lastName.equals("") || password.equals("")) {
+                        request.setAttribute("message", "All fields are required");
+                        request.setAttribute("email", email);
+                        request.setAttribute("firstName", firstName);
+                        request.setAttribute("lastName", lastName);
+                        request.setAttribute("password", password);
+                    } else {
+                        role_id = Integer.parseInt(request.getParameter("role"));
+                        Role role = roleDB.get(role_id);
+                        us.update(email, activity, firstName, lastName, password, role);
+                        session.setAttribute("selectedUser", null);
+                    }
                     break;
                 case "cancel":
+                    session.setAttribute("selectedUser", null);
                     break;
             }
         } catch (Exception ex) {
+            String ex1 = ex.getMessage();
+            if (ex1.contains("Duplicate entry")) {
+                request.setAttribute("email", email);
+                request.setAttribute("firstName", firstName);
+                request.setAttribute("lastName", lastName);
+                request.setAttribute("password", password);
+                request.setAttribute("message", "Email existed");
+            }
             Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-            request.setAttribute("message", "error");
         }
 
-        HttpSession session = request.getSession();
         List<User> users = null;
- 
+
         try {
             users = us.getAll();
             session.setAttribute("userlist", users);
