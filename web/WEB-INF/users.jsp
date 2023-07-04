@@ -91,7 +91,7 @@
             <h2>Edit User</h2>
 
             <!--Form for update-->
-            <form method="post" action="user">
+            <form method="post" action="user" style="display: inline;">
                 <label>Email: </label>
                 <input type="text" name="email" value="${selectedUser.email}" hidden>
                 ${selectedUser.email}
@@ -107,27 +107,18 @@
                 <br>
                 <label>Role: </label>
                 <select name="role">
-
                     <!--Show the role for selected user-->
-                    <c:choose>
-                        <c:when test="${selectedUser.role.id == 1}">
-                            <option value="1" selected>System Admin</option>
-                            <option value="2">Regular User</option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="1">System Admin</option>
-                            <option value="2" selected>Regular User</option>
-                        </c:otherwise>
-                    </c:choose>
+                    <option value="1" ${selectedUser.role.id == '1' ? 'selected' : ''} >System Admin</option>
+                    <option value="2" ${selectedUser.role.id == '2' ? 'selected' : ''} >Regular User</option>
                 </select>              
                 <br>
-                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="action" value="update" >
                 <input type="submit" value="Update">
                 ${message}
             </form>   
 
-            <!--Form for cancel-->
-            <form method="post" action="user">
+<!--            Form for cancel-->
+            <form method="post" action="user" style="display: inline;">
                 <input type="hidden" name="action" value="cancel">
                 <input type="submit" value="Cancel">
             </form>
