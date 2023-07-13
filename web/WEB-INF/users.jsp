@@ -34,9 +34,9 @@
                 <c:forEach  var="user" items="${userlist}">
                     <tr>
                         <td>${user.email}</td>
-                        <td>${user.first_name}</td>
-                        <td>${user.last_name}</td>
-                        <td>${user.role.name}</td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
+                        <td>${user.role.roleName}</td>
                         <td>
                             <c:set var="useremail" value="${fn:replace(user.email, '+', '%2B')}" />
                             <a href=user?action=edit&amp;userEmail=${useremail}>Edit</a>
@@ -97,10 +97,10 @@
                 ${selectedUser.email}
                 <br>
                 <label>First name: </label>
-                <input type="text" name="fnIn" value="${selectedUser.first_name}">
+                <input type="text" name="fnIn" value="${selectedUser.firstName}">
                 <br>
                 <label>Last name:  </label>
-                <input type="text" name="lnIn" value="${selectedUser.last_name}">
+                <input type="text" name="lnIn" value="${selectedUser.lastName}">
                 <br>
                 <label>Password: </label>
                 <input type="password" name="pwIn">
@@ -108,8 +108,8 @@
                 <label>Role: </label>
                 <select name="role">
                     <!--Show the role for selected user-->
-                    <option value="1" ${selectedUser.role.id == '1' ? 'selected' : ''} >System Admin</option>
-                    <option value="2" ${selectedUser.role.id == '2' ? 'selected' : ''} >Regular User</option>
+                    <option value="1" ${selectedUser.role.roleId == '1' ? 'selected' : ''} >System Admin</option>
+                    <option value="2" ${selectedUser.role.roleId == '2' ? 'selected' : ''} >Regular User</option>
                 </select>              
                 <br>
                 <input type="hidden" name="action" value="update" >

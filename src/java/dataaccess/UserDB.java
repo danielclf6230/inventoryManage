@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
 import models.Role;
 import models.User;
 
@@ -21,131 +24,85 @@ import models.User;
 public class UserDB {
 
     public List<User> getAll() throws SQLException {
-        List<User> users = new ArrayList<>();
-        ConnectionPool cp = ConnectionPool.getInstance();
-        Connection con = cp.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        String sql = "SELECT * FROM user";
+        
+        EntityManager em = DBUtil.getEmFactory().createEntityManager();
 
         try {
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                String email = rs.getString(1);
-                Boolean activity;
-                activity = rs.getBoolean(2);
-                String first_name = rs.getString(3);
-                String last_name = rs.getString(4);
-                String password = rs.getString(5);
-                int roleID = rs.getInt(6);
-                RoleDB roleDB = new RoleDB();
-                Role role = roleDB.get(roleID);
-                User user = new User(email, activity, first_name, last_name, password, role);
-                users.add(user);
-            }
-        } finally {
-            DBUtil.closeResultSet(rs);
-            DBUtil.closePreparedStatement(ps);
-            cp.freeConnection(con);
-        }
-
+        List<User> users = em.createNamedQuery("User.findAll",User.class).getResultList();
         return users;
-
+        } finally {
+            em.close();
+        }
     }
 
     public User get(String email) throws SQLException {
-        User user = null;
-        ConnectionPool cp = ConnectionPool.getInstance();
-        Connection con = cp.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
 
-        String sql = "SELECT * FROM user WHERE email=?";
-
+         EntityManager em = DBUtil.getEmFactory().createEntityManager();
 
         try {
-            ps = con.prepareStatement(sql);
-            ps.setString(1, email);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                Boolean activity;
-                activity = rs.getBoolean(2);
-                String first_name = rs.getString(3);
-                String last_name = rs.getString(4);
-                String password = rs.getString(5);
-                int roleID = rs.getInt(6);
-                RoleDB roleDB = new RoleDB();
-                Role role = roleDB.get(roleID);
-                user = new User(email, activity, first_name, last_name, password, role);
-            }
+            User user = em.find(User.class, email);
+            return user;
         } finally {
-            DBUtil.closeResultSet(rs);
-            DBUtil.closePreparedStatement(ps);
-            cp.freeConnection(con);
+           em.close();
         }
-
-        return user;
     }
     
 
     public void insert(User user) throws SQLException{
         
-        ConnectionPool cp = ConnectionPool.getInstance();
-        Connection con = cp.getConnection();
-        PreparedStatement ps = null;
-        String sql = "INSERT INTO user (email, active, first_name, last_name, password, role) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
-        
+        EntityManager em = DBUtil.getEmFactory().createEntityManager();
+        EntityTransaction trans = em.getTransaction();
         try {
-            ps = con.prepareStatement(sql);
-            ps.setString(1, user.getEmail());
-            ps.setBoolean(2, user.getActivity());
-            ps.setString(3, user.getFirst_name());
-            ps.setString(4, user.getLast_name());
-            ps.setString(5, user.getPassword());
-            ps.setInt(6, user.getRole().getId());
-            ps.executeUpdate();
-        } finally {
-            DBUtil.closePreparedStatement(ps);
-            cp.freeConnection(con);
+           Role role = user.getRole();
+           role.getUserList().add(user);
+           trans.begin();
+           em.persist(user);
+           em.merge(role);
+           trans.commit();
+        }catch(Exception ex){
+            trans.rollback();
         }
-        
+        finally {
+            em.close();
+        }
     }
     
     public void update(User user) throws SQLException{
-        ConnectionPool cp = ConnectionPool.getInstance();
-        Connection con = cp.getConnection();
-        PreparedStatement ps = null;
-        String sql = "UPDATE user SET first_name=?, last_name=?, password=?, role=? WHERE email=?";
+        
+        EntityManager em = DBUtil.getEmFactory().createEntityManager();
+        EntityTransaction trans = em.getTransaction();
         
         try {
-            ps = con.prepareStatement(sql);
-            ps.setString(1, user.getFirst_name());
-            ps.setString(2, user.getLast_name());
-            ps.setString(3, user.getPassword());
-            ps.setInt(4, user.getRole().getId());
-            ps.setString(5, user.getEmail());
-            ps.executeUpdate();
-        } finally {
-            DBUtil.closePreparedStatement(ps);
-            cp.freeConnection(con);
+           trans.begin();
+           em.merge(user);
+           trans.commit();
+        }catch(Exception ex){
+            trans.rollback();
+        }
+        finally {
+            em.close();
         }
     }
+    
+    
     public void delete(User user) throws SQLException{
-        ConnectionPool cp = ConnectionPool.getInstance();
-        Connection con = cp.getConnection();
-        PreparedStatement ps = null;
-        String sql = "DELETE FROM user WHERE email=?";
+        
+        EntityManager em = DBUtil.getEmFactory().createEntityManager();
+        EntityTransaction trans = em.getTransaction();
         
         try {
-            ps = con.prepareStatement(sql);
-            ps.setString(1, user.getEmail());
-            ps.executeUpdate();
-        } finally {
-            DBUtil.closePreparedStatement(ps);
-            cp.freeConnection(con);
+           Role role = user.getRole();
+           role.getUserList().remove(user);
+           
+           trans.begin();
+           em.remove(em.merge(user));
+           em.merge(role);
+           trans.commit();
+        }catch(Exception ex){
+            trans.rollback();
+        }
+        finally {
+            em.close();
         }
     }
     
