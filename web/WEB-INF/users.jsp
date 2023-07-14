@@ -108,7 +108,7 @@
                 <label>Role: </label>
                 <select name="role">
                     <!--Show the role for selected user-->
-                    <option value="1" ${selectedUser.role.roleId == '1' ? 'selected' : ''} >System Admin</option>
+                    <option value="1" ${selectedUser.role.roleId == '1' ? 'selected' : 'hidden'} >System Admin</option>
                     <option value="2" ${selectedUser.role.roleId == '2' ? 'selected' : ''} >Regular User</option>
                 </select>              
                 <br>
