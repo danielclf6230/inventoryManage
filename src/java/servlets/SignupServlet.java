@@ -9,6 +9,7 @@ import dataaccess.RoleDB;
 import dataaccess.UserDB;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -24,23 +25,14 @@ import services.UserService;
  *
  * @author danielchow
  */
-public class UserServlet extends HttpServlet {
+public class SignupServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        String email = (String) session.getAttribute("useremail");
-        UserDB userDB = new UserDB();
-        try {
-            User user = userDB.get(email);
-            session.setAttribute("loginuser", user);
 
-        } catch (SQLException ex) {
-            Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        getServletContext().getRequestDispatcher("/WEB-INF/user.jsp")
+     
+        getServletContext().getRequestDispatcher("/WEB-INF/signup.jsp")
                 .forward(request, response);
     }
 
@@ -56,49 +48,42 @@ public class UserServlet extends HttpServlet {
         String lastName = request.getParameter("lnIn");
         String password = request.getParameter("pwIn");
         RoleDB roleDB = new RoleDB();
-        HttpSession session = request.getSession();
-        Boolean active = (Boolean)session.getAttribute("useract");
-
-
-
-        try {
+        
+        try { 
             switch (action) {
-                case "update":
+                 case "signup":
                     if (email.equals("") || firstName.equals("") || lastName.equals("") || password.equals("")) {
                         request.setAttribute("message", "All fields are required");
-                        getServletContext().getRequestDispatcher("/WEB-INF/user.jsp")
-                        .forward(request, response);
+                        request.setAttribute("email", email);
+                        request.setAttribute("firstName", firstName);
+                        request.setAttribute("lastName", lastName);
+                        request.setAttribute("password", password);
                     } else {
-                        int role_id = (int)session.getAttribute("roleid");
+                        Boolean activity = true;
+                        int role_id = 2;
                         Role role = roleDB.get(role_id);
-                        us.update(email, active, firstName, lastName, password, role);
-                        request.setAttribute("message", "Account Updated");
+                        us.insert(email, activity, firstName, lastName, password, role);
+                        request.setAttribute("message", "Account Created");
                     }
                     break;
                 case "cancel":
-                    break;
-                case "inactivate":
-
-                    if(active == true){ 
-                        int role_id = (int)session.getAttribute("roleid");
-                        User user= (User)session.getAttribute("loginuser");
-                        email = user.getEmail();
-                        firstName = user.getFirstName();
-                        lastName = user.getLastName();
-                        password = user.getPassword();
-                        Role role = roleDB.get(role_id);
-                        active = false;
-                        us.update(email, active, firstName, lastName, password, role);
-                        response.sendRedirect("login");
-                    }
+                        break;
             }
-        } catch (Exception ex) {
+        }
+            catch (Exception ex) {
+            String ex1 = ex.getMessage();
+            if (ex1.contains("Duplicate entry")) {
+                request.setAttribute("email", email);
+                request.setAttribute("firstName", firstName);
+                request.setAttribute("lastName", lastName);
+                request.setAttribute("password", password);
+                request.setAttribute("message", "Email existed");
+            }
             Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(active == true){
-        getServletContext().getRequestDispatcher("/WEB-INF/inventory.jsp")
+        
+        getServletContext().getRequestDispatcher("/WEB-INF/login.jsp")
                 .forward(request, response);
-        }
 
     }
 

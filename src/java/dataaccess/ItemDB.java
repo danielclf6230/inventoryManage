@@ -1,58 +1,70 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dataaccess;
 
 import java.sql.SQLException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import models.Role;
-import models.User;
+import javax.persistence.TypedQuery;
+import models.Category;
+import models.Item;
 
 /**
  *
  * @author danielchow
  */
-public class UserDB {
+public class ItemDB {
 
-    public List<User> getAll() throws SQLException {
+    public List<Item> getAll() throws SQLException {
         
         EntityManager em = DBUtil.getEmFactory().createEntityManager();
 
         try {
-        List<User> users = em.createNamedQuery("User.findAll",User.class).getResultList();
-        return users;
+        List<Item> items = em.createNamedQuery("Item.findAll",Item.class).getResultList();
+        return items;
+        } finally {
+            em.close();
+        }
+    }
+    
+       public List<Item> getAll(String email) throws SQLException {
+        
+        EntityManager em = DBUtil.getEmFactory().createEntityManager();
+
+        try {
+        TypedQuery<Item> query = em.createNamedQuery("Item.findByOwner", Item.class);
+        query.setParameter("email", email);
+
+        List<Item> items = query.getResultList();
+        return items;
         } finally {
             em.close();
         }
     }
 
-    public User get(String email) throws SQLException {
+    public Item get(Integer itemId) throws SQLException {
 
          EntityManager em = DBUtil.getEmFactory().createEntityManager();
 
         try {
-            User user = em.find(User.class, email);
-            return user;
+            Item item = em.find(Item.class, itemId);
+            return item;
         } finally {
            em.close();
         }
     }
     
 
-    public void insert(User user) throws SQLException{
+    public void insert(Item item) throws SQLException{
         
         EntityManager em = DBUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
         try {
-           Role role = user.getRole();
-           role.getUserList().add(user);
+           Category category = item.getCategory();
+           category.getItemList().add(item);
            trans.begin();
-           em.persist(user);
-           em.merge(role);
+           em.persist(item);
+           em.merge(category);
            trans.commit();
         }catch(Exception ex){
             trans.rollback();
@@ -62,14 +74,14 @@ public class UserDB {
         }
     }
     
-    public void update(User user) throws SQLException{
+    public void update(Item item) throws SQLException{
         
         EntityManager em = DBUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
         
         try {
            trans.begin();
-           em.merge(user);
+           em.merge(item);
            trans.commit();
         }catch(Exception ex){
             trans.rollback();
@@ -80,18 +92,18 @@ public class UserDB {
     }
     
     
-    public void delete(User user) throws SQLException{
+    public void delete(Item item) throws SQLException{
         
         EntityManager em = DBUtil.getEmFactory().createEntityManager();
         EntityTransaction trans = em.getTransaction();
         
         try {
-           Role role = user.getRole();
-           role.getUserList().remove(user);
+           Category category = item.getCategory();
+           category.getItemList().remove(item);
            
            trans.begin();
-           em.remove(em.merge(user));
-           em.merge(role);
+           em.remove(em.merge(item));
+           em.merge(category);
            trans.commit();
         }catch(Exception ex){
             trans.rollback();

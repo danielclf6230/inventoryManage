@@ -17,7 +17,12 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>Manage Users</h1>
+        <h1>Hi ${loginuser.firstName}</h1>
+        
+        <a href=admin?action=minven>Manage Inventories</a>&nbsp;
+        <a href=admin?action=mcate>Manage Category</a>
+        
+        <h2>Manage Users</h2><br>
         <!--Check if database is not empty-->
         <c:if test="${!empty userlist}">
 
@@ -28,6 +33,7 @@
                     <th>First Name</th>
                     <th>Last Name</th>
                     <th>Role</th>
+                    <th>Status</th>
                     <th> </th>
                     <th> </th>
                 </tr>
@@ -37,14 +43,15 @@
                         <td>${user.firstName}</td>
                         <td>${user.lastName}</td>
                         <td>${user.role.roleName}</td>
+                        <td>${user.active}</td>
                         <td>
                             <c:set var="useremail" value="${fn:replace(user.email, '+', '%2B')}" />
-                            <a href=user?action=edit&amp;userEmail=${useremail}>Edit</a>
+                            <a href=admin?action=edit&amp;userEmail=${useremail}>Edit</a>
                         </td>
 
                         <td>
                             <c:set var="useremail" value="${fn:replace(user.email, '+', '%2B')}" />
-                            <a href=user?action=delete&amp;userEmail=${useremail}>Delete</a>
+                            <a href=admin?action=delete&amp;userEmail=${useremail}>Delete</a>
                         </td>
                     </tr>
                 </c:forEach>
@@ -61,7 +68,7 @@
             <h2>Add User</h2>
 
             <!--Form for add new-->
-            <form method="post" action="user">
+            <form method="post" action="admin">
                 <label>Email: </label>
                 <input type="email" name="email" value="${email}">
                 <br>
@@ -91,7 +98,7 @@
             <h2>Edit User</h2>
 
             <!--Form for update-->
-            <form method="post" action="user" style="display: inline;">
+            <form method="post" action="admin" style="display: inline;">
                 <label>Email: </label>
                 <input type="text" name="email" value="${selectedUser.email}" hidden>
                 ${selectedUser.email}
@@ -108,21 +115,31 @@
                 <label>Role: </label>
                 <select name="role">
                     <!--Show the role for selected user-->
-                    <option value="1" ${selectedUser.role.roleId == '1' ? 'selected' : 'hidden'} >System Admin</option>
+                    <option value="1" ${selectedUser.role.roleId == '1' ? 'selected' : ''} >System Admin</option>
                     <option value="2" ${selectedUser.role.roleId == '2' ? 'selected' : ''} >Regular User</option>
-                </select>              
+                </select> 
                 <br>
+                <label>Status: </label>
+                <select name="status">
+                    <!--Show the status for selected user-->
+                    <option value="true" ${selectedUser.active == 'true' ? 'selected' : ''} >Active</option>
+                    <option value="false" ${selectedUser.active == 'false' ? 'selected' : ''}>Inactive</option>
+                </select>
+                <br><br>
                 <input type="hidden" name="action" value="update" >
                 <input type="submit" value="Update">
-                ${message}
             </form>   
 
 <!--            Form for cancel-->
-            <form method="post" action="user" style="display: inline;">
+            <form method="post" action="admin" style="display: inline;">
                 <input type="hidden" name="action" value="cancel">
                 <input type="submit" value="Cancel">
             </form>
+            ${message}
         </c:if>
+
+        <br>
+        <a href=login?action=logout>Logout</a>
 
     </body>
 </html>
