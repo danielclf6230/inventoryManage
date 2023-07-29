@@ -17,7 +17,7 @@
         <title>Admin Page</title>
     </head>
     <body>
-        <h1>Hi ${loginuser.firstName}</h1>
+        <h1>Hi ${loginuser.firstName} ${loginuser.lastName}</h1>
 
         <a href=admin?action=minven>Manage Inventories</a>&nbsp;
         <a href=admin?action=mcate>Manage Category</a>

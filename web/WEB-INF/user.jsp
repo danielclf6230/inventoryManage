@@ -18,7 +18,8 @@
     </head>
     <body>
         <h1>Edit Account</h1>
-
+        <a href=admin?action=minven>Manage Inventories</a>
+        <br><br>
         <form method="post" action="user" style="display: inline;">
             <label>Email: </label>
             <input type="text" name="email" value="${loginuser.email}" readonly>
@@ -42,10 +43,12 @@
         </form>
         ${message}
 
-        <br><br><br>             
+        <br><br>            
         <form method="post" action="user" style="display: inline;">
             <input type="hidden" name="action" value="deactivate">
             <input type="submit" value="DEACTIVATE">
         </form>
+        <br><br>
+        <a href=login>Logout</a>
     </body>
 </html>

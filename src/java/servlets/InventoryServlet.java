@@ -115,7 +115,6 @@ public class InventoryServlet extends HttpServlet {
                 case "add":
                     if (itemIdIn.equals("") || itemNameIn.equals("") || priceIn.equals("") || emailIn.equals("")) {
                         request.setAttribute("message", "All fields are required");
-                        request.setAttribute("itemIdIn", itemIdIn);
                         request.setAttribute("itemNameIn", itemNameIn);
                         request.setAttribute("priceIn", priceIn);
                     } else if (Integer.parseInt(priceIn) < 0) {

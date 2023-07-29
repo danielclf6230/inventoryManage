@@ -23,7 +23,7 @@
             <br>
         </c:if>
         <c:if test="${roleid eq 2}">
-            <h1>Hi ${loginuser.firstName}</h1>
+            <h1>Hi ${loginuser.firstName} ${loginuser.lastName}</h1>
             <h2>Manage Inventories</h2>
             <a href=inventory?action=macc>Manage Account</a>
             <br>
@@ -137,7 +137,9 @@
             ${message}
         </c:if>
         <br><br>
+        <c:if test="${roleid eq 1}">
         <a href=login>Logout</a>
+        </c:if>
 
     </body>
 </html>
