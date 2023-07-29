@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets;
 
 import dataaccess.RoleDB;
@@ -57,9 +52,7 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("pwIn");
         RoleDB roleDB = new RoleDB();
         HttpSession session = request.getSession();
-        Boolean active = (Boolean)session.getAttribute("useract");
-
-
+        Boolean active = (Boolean) session.getAttribute("useract");
 
         try {
             switch (action) {
@@ -67,9 +60,9 @@ public class UserServlet extends HttpServlet {
                     if (email.equals("") || firstName.equals("") || lastName.equals("") || password.equals("")) {
                         request.setAttribute("message", "All fields are required");
                         getServletContext().getRequestDispatcher("/WEB-INF/user.jsp")
-                        .forward(request, response);
+                                .forward(request, response);
                     } else {
-                        int role_id = (int)session.getAttribute("roleid");
+                        int role_id = (int) session.getAttribute("roleid");
                         Role role = roleDB.get(role_id);
                         us.update(email, active, firstName, lastName, password, role);
                         request.setAttribute("message", "Account Updated");
@@ -77,11 +70,11 @@ public class UserServlet extends HttpServlet {
                     break;
                 case "cancel":
                     break;
-                case "inactivate":
+                case "deactivate":
 
-                    if(active == true){ 
-                        int role_id = (int)session.getAttribute("roleid");
-                        User user= (User)session.getAttribute("loginuser");
+                    if (active == true) {
+                        int role_id = (int) session.getAttribute("roleid");
+                        User user = (User) session.getAttribute("loginuser");
                         email = user.getEmail();
                         firstName = user.getFirstName();
                         lastName = user.getLastName();
@@ -95,9 +88,9 @@ public class UserServlet extends HttpServlet {
         } catch (Exception ex) {
             Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if(active == true){
-        getServletContext().getRequestDispatcher("/WEB-INF/inventory.jsp")
-                .forward(request, response);
+        if (active == true) {
+            getServletContext().getRequestDispatcher("/WEB-INF/inventory.jsp")
+                    .forward(request, response);
         }
 
     }

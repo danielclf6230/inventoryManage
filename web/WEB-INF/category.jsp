@@ -14,18 +14,17 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Category Page</title>
     </head>
     <body>
 
         <h1>Manage Category</h1>
         <a href=inventory?action=muser>Manage Users</a>&nbsp;
         <a href=admin?action=minven>Manage Inventories</a>
-        <br>
-        <!--Check if database is not empty-->
+        <br><br>
+
         <c:if test="${!empty catlist}">
 
-            <!--Table show all the categories-->
             <table border="1">
                 <tr>
                     <th>Category ID</th>
@@ -44,12 +43,10 @@
             </table>
         </c:if>
 
-        <!--Check if database is empty-->
         <c:if test="${empty catlist}">
             <h3>No items found. Please add an item.</h3>   
         </c:if>
 
-        <!--Check if user not selected-->
         <c:if test="${selectedCat eq null}">    
             <h2>Add Category</h2>
 
@@ -65,11 +62,9 @@
             </form>
         </c:if>
 
-        <!--Check if user selected-->
         <c:if test="${selectedCat ne null}">
             <h2>Edit Category</h2>
 
-            <!--Form for update-->
             <form method="post" action="category" style="display: inline;">
                 <label>Category ID: </label>
                 <input type="text" name="categoryIdIn" value="${selectedCat.categoryId}" hidden>
@@ -80,11 +75,10 @@
                 <br>
                 <input type="hidden" name="action" value="update" >
                 <input type="submit" value="Update">
-                
+
                 ${message}
             </form>   
 
-<!--            Form for cancel-->
             <form method="post" action="category" style="display: inline;">
                 <input type="hidden" name="action" value="cancel">
                 <input type="submit" value="Cancel">

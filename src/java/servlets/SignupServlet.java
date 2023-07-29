@@ -1,24 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets;
 
 import dataaccess.RoleDB;
-import dataaccess.UserDB;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import models.Role;
-import models.User;
 import services.UserService;
 
 /**
@@ -31,7 +21,6 @@ public class SignupServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-     
         getServletContext().getRequestDispatcher("/WEB-INF/signup.jsp")
                 .forward(request, response);
     }
@@ -48,10 +37,10 @@ public class SignupServlet extends HttpServlet {
         String lastName = request.getParameter("lnIn");
         String password = request.getParameter("pwIn");
         RoleDB roleDB = new RoleDB();
-        
-        try { 
+
+        try {
             switch (action) {
-                 case "signup":
+                case "signup":
                     if (email.equals("") || firstName.equals("") || lastName.equals("") || password.equals("")) {
                         request.setAttribute("message", "All fields are required");
                         request.setAttribute("email", email);
@@ -67,21 +56,22 @@ public class SignupServlet extends HttpServlet {
                     }
                     break;
                 case "cancel":
-                        break;
+                    break;
             }
-        }
-            catch (Exception ex) {
+        } catch (Exception ex) {
             String ex1 = ex.getMessage();
-            if (ex1.contains("Duplicate entry")) {
+            if (ex1.contains("No transaction is currently active")) {
                 request.setAttribute("email", email);
                 request.setAttribute("firstName", firstName);
                 request.setAttribute("lastName", lastName);
                 request.setAttribute("password", password);
                 request.setAttribute("message", "Email existed");
+                getServletContext().getRequestDispatcher("/WEB-INF/signup.jsp")
+                        .forward(request, response);
             }
             Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         getServletContext().getRequestDispatcher("/WEB-INF/login.jsp")
                 .forward(request, response);
 

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets;
 
 import dataaccess.CategoryDB;
@@ -72,7 +67,7 @@ public class InventoryServlet extends HttpServlet {
                     session.setAttribute("itemlist", items);
                     categories = cs.getAll();
                     session.setAttribute("categorylist", categories);
-                    
+
                 } catch (SQLException ex) {
 
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -83,7 +78,7 @@ public class InventoryServlet extends HttpServlet {
                         items = is.getAll(useremail);
                         session.setAttribute("itemlist", items);
                         categories = cs.getAll();
-                    session.setAttribute("categorylist", categories);
+                        session.setAttribute("categorylist", categories);
 
                     } catch (SQLException ex) {
 
@@ -123,10 +118,9 @@ public class InventoryServlet extends HttpServlet {
                         request.setAttribute("itemIdIn", itemIdIn);
                         request.setAttribute("itemNameIn", itemNameIn);
                         request.setAttribute("priceIn", priceIn);
-                    } else if(Integer.parseInt(priceIn) < 0){
+                    } else if (Integer.parseInt(priceIn) < 0) {
                         request.setAttribute("message", "Price cannot be negative");
-                    }
-                    else {
+                    } else {
                         int categoryId = Integer.parseInt(request.getParameter("category"));
                         Category category = categoryDB.get(categoryId);
                         int puitemId = Integer.parseInt(itemIdIn);
@@ -134,14 +128,14 @@ public class InventoryServlet extends HttpServlet {
                         is.insert(puitemId, category, itemNameIn, putprice, emailIn);
                     }
                     break;
-                    
+
                 case "update":
                     if (itemIdIn.equals("") || itemNameIn.equals("") || priceIn.equals("") || emailIn.equals("")) {
                         request.setAttribute("message", "All fields are required");
                         request.setAttribute("itemIdIn", itemIdIn);
                         request.setAttribute("itemNameIn", itemNameIn);
                         request.setAttribute("priceIn", priceIn);
-                    } else if(Double.parseDouble(priceIn) < 0){
+                    } else if (Double.parseDouble(priceIn) < 0) {
                         request.setAttribute("message", "Price cannot be negative");
                     } else {
                         int puitemId = Integer.parseInt(itemIdIn);
@@ -153,13 +147,15 @@ public class InventoryServlet extends HttpServlet {
                         session.setAttribute("selectedItem", null);
                     }
                     break;
-                    
+
                 case "cancel":
                     session.setAttribute("selectedItem", null);
                     break;
             }
-        }
-            catch (Exception ex) {
+        } catch (NumberFormatException e) {
+
+            request.setAttribute("message", "Price must be a valid number");
+        } catch (Exception ex) {
             Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -173,6 +169,8 @@ public class InventoryServlet extends HttpServlet {
                 categories = cs.getAll();
                 session.setAttribute("categorylist", categories);
 
+            } catch (NumberFormatException e) {
+                request.setAttribute("message", "Price must be a valid number");
             } catch (SQLException ex) {
 
                 Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);

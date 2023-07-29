@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets;
 
 import dataaccess.RoleDB;
@@ -29,55 +24,54 @@ public class AdminServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String action = request.getParameter("action");
-         
-             if (action != null && action.equals("minven")) {
+        String action = request.getParameter("action");
+
+        if (action != null && action.equals("minven")) {
             response.sendRedirect("inventory");
-        }else
-            if (action != null && action.equals("mcate")) {
+        } else if (action != null && action.equals("mcate")) {
             response.sendRedirect("category");
-        }
-             else{
-                 
-        UserService us = new UserService();
-        HttpSession session = request.getSession();
+        } else {
 
-        if ((action != null && action.equals("edit"))) {
+            UserService us = new UserService();
+            HttpSession session = request.getSession();
+
+            if ((action != null && action.equals("edit"))) {
+                try {
+                    String email = request.getParameter("userEmail");
+                    User user = us.get(email);
+                    session.setAttribute("selectedUser", user);
+
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            if (action != null && action.equals("delete")) {
+                try {
+                    String email = request.getParameter("userEmail");
+                    us.delete(email);
+                    System.out.println("Deleted");
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            List<User> users = null;
+
             try {
-                String email = request.getParameter("userEmail");
-                User user = us.get(email);
-                session.setAttribute("selectedUser", user);
-                
-            } catch (Exception ex) {
+                users = us.getAll();
+                session.setAttribute("userlist", users);
+
+            } catch (SQLException ex) {
+
                 Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
+
+            getServletContext().getRequestDispatcher("/WEB-INF/admin.jsp")
+                    .forward(request, response);
         }
 
-        if (action != null && action.equals("delete")) {
-            try {
-                String email = request.getParameter("userEmail");
-                us.delete(email);
-            } catch (Exception ex) {
-                Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        List<User> users = null;
-
-        try {
-            users = us.getAll();
-            session.setAttribute("userlist", users);
-
-        } catch (SQLException ex) {
-
-            Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-                            getServletContext().getRequestDispatcher("/WEB-INF/admin.jsp")
-                .forward(request, response);
     }
-
-              }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

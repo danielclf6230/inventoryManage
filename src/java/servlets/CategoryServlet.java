@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package servlets;
 
 import dataaccess.CategoryDB;
@@ -19,7 +14,6 @@ import javax.servlet.http.HttpSession;
 import models.Category;
 import services.CategoryService;
 
-
 /**
  *
  * @author danielchow
@@ -29,18 +23,18 @@ public class CategoryServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-         String action = request.getParameter("action");
+        String action = request.getParameter("action");
 
-         CategoryService cs = new CategoryService();
-         HttpSession session = request.getSession();
+        CategoryService cs = new CategoryService();
+        HttpSession session = request.getSession();
 
         if ((action != null && action.equals("edit"))) {
             try {
                 String categoryId = request.getParameter("categoryid");
-                
+
                 Category category = cs.get(Integer.parseInt(categoryId));
                 session.setAttribute("selectedCat", category);
-                
+
             } catch (Exception ex) {
                 Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -60,7 +54,6 @@ public class CategoryServlet extends HttpServlet {
         getServletContext().getRequestDispatcher("/WEB-INF/category.jsp")
                 .forward(request, response);
     }
-              
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -70,8 +63,6 @@ public class CategoryServlet extends HttpServlet {
         String action = request.getParameter("action");
         String categoryIdIn = request.getParameter("categoryIdIn");
         String categoryNameIn = request.getParameter("categoryNameIn");
-
-        CategoryDB categoryDB = new CategoryDB();
         HttpSession session = request.getSession();
 
         try {
@@ -82,17 +73,17 @@ public class CategoryServlet extends HttpServlet {
                         request.setAttribute("categoryIdIn", categoryIdIn);
                         request.setAttribute("categoryNameIn", categoryNameIn);
                     } else {
-                        cs.insert(Integer.parseInt(categoryIdIn),categoryNameIn);
+                        cs.insert(Integer.parseInt(categoryIdIn), categoryNameIn);
                     }
                     break;
-                    
+
                 case "update":
-                     if (categoryNameIn.equals("") || categoryIdIn.equals("")) {
+                    if (categoryNameIn.equals("") || categoryIdIn.equals("")) {
                         request.setAttribute("message", "All fields are required");
                         request.setAttribute("categoryIdIn", categoryIdIn);
                         request.setAttribute("categoryNameIn", categoryNameIn);
                     } else {
-                        cs.update(Integer.parseInt(categoryIdIn),categoryNameIn);
+                        cs.update(Integer.parseInt(categoryIdIn), categoryNameIn);
                         request.setAttribute("message", "Inventory Updated");
                         session.setAttribute("selectedCat", null);
                     }

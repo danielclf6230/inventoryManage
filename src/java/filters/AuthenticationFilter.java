@@ -1,10 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package filters;
-
 
 import java.io.IOException;
 import javax.servlet.Filter;
@@ -33,11 +27,11 @@ public class AuthenticationFilter implements Filter {
         HttpSession session = req.getSession();
         String email = (String) session.getAttribute("useremail");
 
-            if (email == null) {
-                HttpServletResponse res = (HttpServletResponse) response;
-                res.sendRedirect("login");
-                return;
-            }
+        if (email == null) {
+            HttpServletResponse res = (HttpServletResponse) response;
+            res.sendRedirect("login");
+            return;
+        }
         chain.doFilter(request, response);
     }
 
