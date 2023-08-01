@@ -54,8 +54,7 @@
             <form method="post" action="category">
                 <input type="text" name="categoryIdIn" value="0" hidden>
                 <label>Category Name: </label>
-                <input type="text" name="categoryNameIn" value="${categoryNameIn}">
-                <br>
+                <input type="text" name="categoryNameIn" value="${categoryNameIn}">&nbsp;
                 <input type="hidden" name="action" value="add">
                 <input type="submit" value="Save">
                 ${message}
