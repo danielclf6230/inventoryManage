@@ -44,11 +44,18 @@
         ${message}
 
         <br><br>            
-        <form method="post" action="user" style="display: inline;">
+        <form method="post" action="user" style="display: inline;" onsubmit="return confirmDeactivate();">
             <input type="hidden" name="action" value="deactivate">
-            <input type="submit" value="DEACTIVATE">
+            <input type="submit" value="DEACTIVATE" style="color: red">
         </form>
         <br><br>
         <a href=login>Logout</a>
+        
+        <script>
+        function confirmDeactivate() {
+            // Display a confirmation alert to the user
+            return confirm("Are you sure you want to deactivate your account?");
+        }
+        </script>
     </body>
 </html>
