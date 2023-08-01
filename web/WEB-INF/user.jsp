@@ -43,14 +43,17 @@
         </form>
         ${message}
 
-        <br><br>            
+        <br><br>    
+        -------------------<br>        
         <form method="post" action="user" style="display: inline;" onsubmit="return confirmDeactivate();">
             <input type="hidden" name="action" value="deactivate">
             <input type="submit" value="DEACTIVATE" style="color: red">
-        </form>
-        <br><br>
+        </form><br>
+        -------------------
+        <br><br><br>
+       
         <a href=login>Logout</a>
-        
+
         <script>
         function confirmDeactivate() {
             // Display a confirmation alert to the user
