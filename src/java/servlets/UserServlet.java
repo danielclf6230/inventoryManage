@@ -65,7 +65,7 @@ public class UserServlet extends HttpServlet {
                         int role_id = (int) session.getAttribute("roleid");
                         Role role = roleDB.get(role_id);
                         us.update(email, active, firstName, lastName, password, role);
-                        request.setAttribute("message", "Account Updated");
+                        request.setAttribute("message", "Account Updated . The display name will update after re-login");
                     }
                     break;
                 case "cancel":
