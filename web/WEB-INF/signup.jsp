@@ -30,7 +30,9 @@
             <br>
             <label>Password: </label>
             <input type="password" name="pwIn" value="${newuser.password}">    
-            <br>
+            
+            <br><br>
+            
             <input type="hidden" name="action" value="signup" >
             <input type="submit" value="Sign up">
         </form>   
